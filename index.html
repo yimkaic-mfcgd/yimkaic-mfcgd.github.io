@@ -2,31 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>🀄 Hong Kong Mahjong Scoreboard</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
       padding: 1rem;
     }
-    .table-wrap {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
     table {
       border-collapse: collapse;
       margin-top: 1rem;
-      min-width: 600px; /* important */
       width: 100%;
-      table-layout: fixed;
     }
     th, td {
-      text-align: center;
-      overflow: hidden;
-      /* text-overflow: ellipsis; */
       border: 1px solid #ccc;
       padding: 6px 10px;
-      white-space: nowrap;
     }
     th {
       background: #f5f5f5;
@@ -38,23 +27,25 @@
     td.date {
       white-space: nowrap;
     }
+    .total-row td {
+      font-weight: bold;
+      background: #fff3cd;
+    }
   </style>
 </head>
 <body>
 
 <h1>🀄 Hong Kong Mahjong Scoreboard（港式麻雀）</h1>
+<h3>This page records Hong Kong Mahjong games. All sessions are recorded by date, and each session record the final $$$.</h3>
 <hr/>
 
 <h2>📅 Game Records（對局紀錄）</h2>
 <hr/>
 
-  
-<div class="table-wrap">
 <table id="scoreboard">
   <thead></thead>
   <tbody></tbody>
 </table>
-</div>
 
 <script src="asset/mahjong.js"></script>
 </body>
