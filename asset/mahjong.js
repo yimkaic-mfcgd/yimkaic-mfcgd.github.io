@@ -7,6 +7,7 @@ fetch(`data/score.csv?v=${Date.now()}`)
 
     const thead = document.querySelector("#scoreboard thead");
     const tbody = document.querySelector("#scoreboard tbody");
+    const totals = new Array(headers.length).fill(0);
 
     // Build header row from CSV
     const trHead = document.createElement("tr");
@@ -29,7 +30,9 @@ fetch(`data/score.csv?v=${Date.now()}`)
           td.textContent = val;
           td.className = "date";
         } else {
-          td.textContent = Number(val).toLocaleString("en-GB");
+          const num = Number(val);
+          totals[i] += num;
+          td.textContent = num.toLocaleString("en-GB");
           td.className = "num";
         }
 
@@ -38,4 +41,22 @@ fetch(`data/score.csv?v=${Date.now()}`)
 
       tbody.appendChild(tr);
     });
+
+    // Build total row
+    const trTotal = document.createElement("tr");
+    headers.forEach((_, i) => {
+      const td = document.createElement("td");
+
+      if (i === 0) {
+        td.textContent = "Total";
+        td.className = "date";
+      } else {
+        td.textContent = totals[i].toLocaleString("en-GB");
+        td.className = "num";
+      }
+
+      trTotal.appendChild(td);
+    });
+
+    tbody.appendChild(trTotal);
   });
