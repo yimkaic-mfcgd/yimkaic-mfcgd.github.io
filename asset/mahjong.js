@@ -44,6 +44,8 @@ fetch(`data/score.csv?v=${Date.now()}`)
 
     // Build total row
     const trTotal = document.createElement("tr");
+    trTotal.className = "total-row";
+
     headers.forEach((_, i) => {
       const td = document.createElement("td");
 
