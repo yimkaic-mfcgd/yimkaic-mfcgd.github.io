@@ -1,4 +1,4 @@
-fetch(`data/scores.csv?v=${Date.now()}`)
+fetch(`data/score.csv?v=${Date.now()}`)
   .then(res => res.text())
   .then(text => {
     const lines = text.trim().split("\n");
