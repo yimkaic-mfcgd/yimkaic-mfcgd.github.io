@@ -3,7 +3,7 @@ fetch(`data/score.csv?v=${Date.now()}`)
   .then(text => {
     const lines = text.trim().split("\n");
     const headers = lines[0].split(",");
-    const rows = lines.slice(1);
+    const rows = lines.slice(1).filter(row => row.trim() !== "");
 
     const thead = document.querySelector("#scoreboard thead");
     const tbody = document.querySelector("#scoreboard tbody");
@@ -12,7 +12,7 @@ fetch(`data/score.csv?v=${Date.now()}`)
     const trHead = document.createElement("tr");
     headers.forEach(h => {
       const th = document.createElement("th");
-      th.textContent = h === "date" ? "Date" : h;
+      th.textContent = h === "date" || h === "Date" ? "Date" : h;
       trHead.appendChild(th);
     });
     thead.appendChild(trHead);
@@ -44,6 +44,7 @@ fetch(`data/score.csv?v=${Date.now()}`)
     });
 
     const trTotal = document.createElement("tr");
+    trTotal.className = "total-row";
     headers.forEach((_, i) => {
       const td = document.createElement("td");
 
