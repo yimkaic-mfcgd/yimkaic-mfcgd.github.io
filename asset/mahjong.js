@@ -2,7 +2,8 @@ fetch(`data/score.csv?v=${Date.now()}`)
   .then(res => res.text())
   .then(text => {
     const lines = text.trim().split("\n").filter(line => line.trim() !== "");
-    const headers = lines[0].split(",").map(h => h.trim());
+    const csvHeaders = lines[0].split(",").map(h => h.trim());
+    const headers = [...csvHeaders, "Balance"];
     const rows = lines.slice(1);
 
     const thead = document.querySelector("#scoreboard thead");
@@ -23,11 +24,12 @@ fetch(`data/score.csv?v=${Date.now()}`)
 
     rows.forEach(row => {
       const rawValues = row.split(",").map(v => v.trim());
-      const values = headers.map((_, i) => rawValues[i] ?? "");
+      const values = csvHeaders.map((_, i) => rawValues[i] ?? "");
+      const balance = values.slice(1).reduce((sum, val) => sum + Number(val || 0), 0);
 
       const tr = document.createElement("tr");
 
-      values.forEach((val, i) => {
+      [...values, balance].forEach((val, i) => {
         const td = document.createElement("td");
 
         if (i === 0) {
