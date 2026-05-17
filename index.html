@@ -9,6 +9,20 @@
       font-family: system-ui, sans-serif;
       padding: 1rem;
     }
+    .view-toggle {
+      margin: 1rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .view-toggle label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
     .table-wrap {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
@@ -52,7 +66,14 @@
 <h2>📅 Game Records（對局紀錄）</h2>
 <hr/>
 
-  
+<div class="view-toggle">
+  <label for="score-mode-toggle">
+    <input type="checkbox" id="score-mode-toggle">
+    Show relative difference
+  </label>
+  <span id="score-mode-label">Showing: Lump sum left</span>
+</div>
+
 <div class="table-wrap">
 <table id="scoreboard">
   <thead></thead>
