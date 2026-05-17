@@ -78,7 +78,7 @@ fetch(`data/score.csv?v=${Date.now()}`)
       tbody.appendChild(trTotal);
 
       if (modeLabel) {
-        modeLabel.textContent = currentMode === "lump" ? "Showing: Lump sum left" : "Showing: Relative difference";
+        modeLabel.textContent = currentMode === "lump" ? "Showing: Lump sum" : "Showing: Relative difference";
       }
     };
 
