@@ -3,69 +3,107 @@ fetch(`data/score.csv?v=${Date.now()}`)
   .then(text => {
     const lines = text.trim().split("\n").filter(line => line.trim() !== "");
     const csvHeaders = lines[0].split(",").map(h => h.trim());
-    const headers = [...csvHeaders, "Balance"];
+    const dataHeaders = csvHeaders.slice(2);
+    const headers = [csvHeaders[0], ...dataHeaders, "Balance"];
     const rows = lines.slice(1);
 
     const thead = document.querySelector("#scoreboard thead");
     const tbody = document.querySelector("#scoreboard tbody");
+    const modeToggle = document.querySelector("#score-mode-toggle");
+    const modeLabel = document.querySelector("#score-mode-label");
 
-    thead.innerHTML = "";
-    tbody.innerHTML = "";
+    let currentMode = "lump";
+    let parsedRows = [];
 
-    const trHead = document.createElement("tr");
-    headers.forEach(h => {
-      const th = document.createElement("th");
-      th.textContent = h.toLowerCase() === "date" ? "Date" : h;
-      trHead.appendChild(th);
-    });
-    thead.appendChild(trHead);
+    const formatNumber = num => Number(num || 0).toLocaleString("en-GB");
 
-    const totals = new Array(headers.length).fill(0);
+    const render = () => {
+      thead.innerHTML = "";
+      tbody.innerHTML = "";
 
-    rows.forEach(row => {
-      const rawValues = row.split(",").map(v => v.trim());
-      const values = csvHeaders.map((_, i) => rawValues[i] ?? "");
-      const balance = values.slice(1).reduce((sum, val) => sum + Number(val || 0), 0);
+      const trHead = document.createElement("tr");
+      headers.forEach(h => {
+        const th = document.createElement("th");
+        th.textContent = h.toLowerCase() === "date" ? "Date" : h;
+        trHead.appendChild(th);
+      });
+      thead.appendChild(trHead);
 
-      const tr = document.createElement("tr");
+      const totals = new Array(headers.length).fill(0);
 
-      [...values, balance].forEach((val, i) => {
+      parsedRows.forEach(row => {
+        const tr = document.createElement("tr");
+        const displayValues =
+          currentMode === "relative"
+            ? row.players.map(value => value - row.base)
+            : row.players;
+        const balance = displayValues.reduce((sum, val) => sum + Number(val || 0), 0);
+
+        [row.date, ...displayValues, balance].forEach((val, i) => {
+          const td = document.createElement("td");
+
+          if (i === 0) {
+            td.textContent = val;
+            td.className = "date";
+          } else {
+            const num = Number(val || 0);
+            td.textContent = formatNumber(num);
+            td.className = "num";
+            totals[i] += num;
+          }
+
+          tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+      });
+
+      const trTotal = document.createElement("tr");
+      trTotal.className = "total-row";
+
+      headers.forEach((_, i) => {
         const td = document.createElement("td");
 
         if (i === 0) {
-          td.textContent = val;
+          td.textContent = "Total";
           td.className = "date";
         } else {
-          const num = Number(val || 0);
-          td.textContent = num.toLocaleString("en-GB");
+          td.textContent = formatNumber(totals[i]);
           td.className = "num";
-          totals[i] += num;
         }
 
-        tr.appendChild(td);
+        trTotal.appendChild(td);
       });
 
-      tbody.appendChild(tr);
-    });
+      tbody.appendChild(trTotal);
 
-    const trTotal = document.createElement("tr");
-    trTotal.className = "total-row";
-
-    headers.forEach((_, i) => {
-      const td = document.createElement("td");
-
-      if (i === 0) {
-        td.textContent = "Total";
-        td.className = "date";
-      } else {
-        td.textContent = totals[i].toLocaleString("en-GB");
-        td.className = "num";
+      if (modeLabel) {
+        modeLabel.textContent = currentMode === "lump" ? "Showing: Lump sum left" : "Showing: Relative difference";
       }
+    };
 
-      trTotal.appendChild(td);
+    parsedRows = rows.map(row => {
+      const rawValues = row.split(",").map(v => v.trim());
+      const values = csvHeaders.map((_, i) => rawValues[i] ?? "");
+      const base = Number(values[1] || 0);
+      const players = values.slice(2).map(v => Number(v || 0));
+
+      return {
+        date: values[0],
+        base,
+        players,
+      };
     });
 
-    tbody.appendChild(trTotal);
+    if (modeToggle) {
+      modeToggle.checked = false;
+      modeToggle.addEventListener("change", e => {
+        currentMode = e.target.checked ? "relative" : "lump";
+        render();
+      });
+    }
+
+    render();
   })
   .catch(err => {
     console.error("Failed to load scoreboard:", err);
