@@ -35,7 +35,7 @@ fetch(`data/score.csv?v=${Date.now()}`)
         const tr = document.createElement("tr");
         const displayValues =
           currentMode === "relative"
-            ? row.players.map(value => value - row.base)
+            ? row.players.map(value => (value === 0 ? 0 : value - row.base))
             : row.players;
         const balance = displayValues.reduce((sum, val) => sum + Number(val || 0), 0);
 
