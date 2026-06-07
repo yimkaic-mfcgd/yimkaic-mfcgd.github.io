@@ -4,7 +4,7 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
     const lines = text.trim().split("\n").filter(line => line.trim() !== "");
     const csvHeaders = lines[0].split(",").map(h => h.trim());
     const dataHeaders = csvHeaders.slice(2);
-    const headers = [csvHeaders[0], ...dataHeaders];
+    const headers = [csvHeaders[0], ...dataHeaders, "Balance"];
     const rows = lines.slice(1);
 
     const thead = document.querySelector("#scoreboard thead");
@@ -37,8 +37,9 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
           currentMode === "relative"
             ? row.players.map(value => (value === 0 ? 0 : value - row.base))
             : row.players;
+        const balance = displayValues.reduce((sum, val) => sum + Number(val || 0), 0);
 
-        [row.date, ...displayValues].forEach((val, i) => {
+        [row.date, ...displayValues, balance].forEach((val, i) => {
           const td = document.createElement("td");
 
           if (i === 0) {
