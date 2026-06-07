@@ -1,4 +1,4 @@
-fetch(`data/score.csv?v=${Date.now()}`)
+fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYAtQ6tbJsYuFSEAFM8xskGbRIhxR2Yx_Kmen7ecbRphUIXPaBy0yzgAJ/pub?gid=0&single=true&output=csv`)
   .then(res => res.text())
   .then(text => {
     const lines = text.trim().split("\n").filter(line => line.trim() !== "");
