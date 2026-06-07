@@ -3,8 +3,8 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
   .then(text => {
     const lines = text.trim().split("\n").filter(line => line.trim() !== "");
     const csvHeaders = lines[0].split(",").map(h => h.trim());
-    const dataHeaders = csvHeaders.slice(2);
-    const headers = [csvHeaders[0], ...dataHeaders, "Balance"];
+    const visibleHeaders = csvHeaders.slice(2, -2);
+    const headers = [csvHeaders[0], ...visibleHeaders];
     const rows = lines.slice(1);
 
     const thead = document.querySelector("#scoreboard thead");
@@ -35,11 +35,20 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
         const tr = document.createElement("tr");
         const displayValues =
           currentMode === "relative"
-            ? row.players.map(value => (value === 0 ? 0 : value - row.base))
-            : row.players;
-        const balance = displayValues.reduce((sum, val) => sum + Number(val || 0), 0);
+            ? row.visiblePlayers.map((value, i) => {
+                if (i === row.visiblePlayers.length - 1) {
+                  return row.diffValue;
+                }
+                return value;
+              })
+            : row.visiblePlayers.map((value, i) => {
+                if (i === row.visiblePlayers.length - 1) {
+                  return row.totalValue;
+                }
+                return value;
+              });
 
-        [row.date, ...displayValues, balance].forEach((val, i) => {
+        [row.date, ...displayValues].forEach((val, i) => {
           const td = document.createElement("td");
 
           if (i === 0) {
@@ -85,13 +94,15 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
     parsedRows = rows.map(row => {
       const rawValues = row.split(",").map(v => v.trim());
       const values = csvHeaders.map((_, i) => rawValues[i] ?? "");
-      const base = Number(values[1] || 0);
-      const players = values.slice(2).map(v => Number(v || 0));
+      const visiblePlayers = values.slice(2, -2).map(v => Number(v || 0));
+      const totalValue = Number(values[values.length - 2] || 0);
+      const diffValue = Number(values[values.length - 1] || 0);
 
       return {
         date: values[0],
-        base,
-        players,
+        visiblePlayers,
+        totalValue,
+        diffValue,
       };
     });
 
