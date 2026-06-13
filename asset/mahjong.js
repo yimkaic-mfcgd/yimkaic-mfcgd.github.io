@@ -51,8 +51,14 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
           const td = document.createElement("td");
 
           if (i === 0) {
-            td.textContent = val;
-            td.className = "date";
+            if (!/^\d+$/.test(val)) {
+              const serial = Number(val);
+              const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+              const date = new Date(excelEpoch.getTime() + serial * 86400000);
+              val = date.toLocaleDateString("en-GB");
+              td.textContent = val;
+              td.className = "date";
+            }
           } else {
             const num = Number(val || 0);
             td.textContent = formatNumber(num);
