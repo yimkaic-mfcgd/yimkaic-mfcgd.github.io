@@ -4,13 +4,12 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
     const lines = text.trim().split("\n").filter(line => line.trim() !== "");
     const csvHeaders = lines[0].split(",").map(h => h.trim());
     const visibleHeaders = csvHeaders.slice(2, -2);
-    const headers = [csvHeaders[0], ...visibleHeaders];
+    const headers = [csvHeaders[0], ...visibleHeaders, 'Balance'];
     const rows = lines.slice(1);
 
     const thead = document.querySelector("#scoreboard thead");
     const tbody = document.querySelector("#scoreboard tbody");
     const modeToggle = document.querySelector("#score-mode-toggle");
-    const modeLabel = document.querySelector("#score-mode-label");
 
     let currentMode = "lump";
     let parsedRows = [];
@@ -85,10 +84,6 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
       });
 
       tbody.appendChild(trTotal);
-
-      if (modeLabel) {
-        modeLabel.textContent = currentMode === "lump" ? "Showing: Lump sum" : "Showing: Relative difference";
-      }
     };
 
     parsedRows = rows.map(row => {
