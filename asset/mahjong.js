@@ -3,8 +3,8 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
   .then(text => {
     const lines = text.trim().split("\n").filter(line => line.trim() !== "");
     const csvHeaders = lines[0].split(",").map(h => h.trim());
-    const visibleHeaders = csvHeaders.slice(2, -2);
-    const headers = [csvHeaders[0], ...visibleHeaders, 'Balance'];
+    const playerNames = csvHeaders.slice(2, -2);
+    const headers = [csvHeaders[0], ...playerNames, 'Balance'];
     const rows = lines.slice(1);
 
     const thead = document.querySelector("#scoreboard thead");
@@ -34,14 +34,14 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
         const tr = document.createElement("tr");
         const displayValues =
           currentMode === "relative"
-            ? row.visiblePlayers.map((value, i) => {
-                if (i === row.visiblePlayers.length - 1) {
+            ? row.playerScores.map((value, i) => {
+                if (i === headers.length - 1) {
                   return row.diffValue;
                 }
                 return value;
               })
             : row.visiblePlayers.map((value, i) => {
-                if (i === row.visiblePlayers.length - 1) {
+                if (i === headers - 1) {
                   return row.totalValue;
                 }
                 return value;
@@ -89,7 +89,7 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
     parsedRows = rows.map(row => {
       const rawValues = row.split(",").map(v => v.trim());
       const values = csvHeaders.map((_, i) => rawValues[i] ?? "");
-      const visiblePlayers = values.slice(2, -2).map(v => Number(v || 0));
+      const playerScores = values.slice(2, -2).map(v => Number(v || 0));
       const totalValue = Number(values[values.length - 2] || 0);
       const diffValue = Number(values[values.length - 1] || 0);
 
