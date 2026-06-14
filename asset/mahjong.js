@@ -88,7 +88,6 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
       const playerScores = values.slice(2, -2).map(v => Number(v || 0));
       const totalValue = Number(values[values.length - 2] || 0);
       const diffValue = Number(values[values.length - 1] || 0);
-      const excelEpoch = new Date(Date.UTC(1899, 11, 30)); // Excel base date
 
       return {
         date: /^\d{5}$/.test(values[0])? new Date((values[0] - 25569) * 86400000) : values[0],
