@@ -3,8 +3,8 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
   .then(text => {
     const lines = text.trim().split("\n").filter(line => line.trim() !== "");
     const csvHeaders = lines[0].split(",").map(h => h.trim());
-    const playerNames = csvHeaders.slice(2, -2);
-    const headers = [csvHeaders[0], ...playerNames, 'Balance'];
+    const visibleHeaders = csvHeaders.slice(2, -2);
+    const headers = [csvHeaders[0], ...visibleHeaders, 'Balance'];
     const rows = lines.slice(1);
 
     const thead = document.querySelector("#scoreboard thead");
@@ -35,30 +35,20 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
         const displayValues =
           currentMode === "relative"
             ? row.playerScores.map((value, i) => {
-                if (i === headers.length - 1) {
-                  return row.diffValue;
-                }
-                return value;
+                return value === 0? 0 : value - row.baseValue;
               })
-            : row.visiblePlayers.map((value, i) => {
-                if (i === headers - 1) {
-                  return row.totalValue;
-                }
+            : row.playerScores.map((value, i) => {
                 return value;
               });
+        const balValue = 
+          currentMode === "relative"? row.diffValue: row.totalValue;
 
-        [row.date, ...displayValues].forEach((val, i) => {
+        [row.date, ...displayValues, balValue].forEach((val, i) => {
           const td = document.createElement("td");
 
           if (i === 0) {
-            if (!/^\d+$/.test(val)) {
-              const serial = Number(val);
-              const excelEpoch = new Date(Date.UTC(1899, 11, 30));
-              const date = new Date(excelEpoch.getTime() + serial * 86400000);
-              val = date.toLocaleDateString("en-GB");
-              td.textContent = val;
-              td.className = "date";
-            }
+            td.textContent = val;
+            td.className = "date";
           } else {
             const num = Number(val || 0);
             td.textContent = formatNumber(num);
@@ -101,7 +91,8 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
 
       return {
         date: values[0],
-        visiblePlayers,
+        baseValue: values[1],
+        playerScores,
         totalValue,
         diffValue,
       };
