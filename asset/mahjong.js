@@ -90,7 +90,7 @@ fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRwe0aPrTgSRP3cHuN1el-KYA
       const diffValue = Number(values[values.length - 1] || 0);
 
       return {
-        date: /^\d{5}$/.test(values[0])? new Date((values[0] - 25569) * 86400000) : values[0],
+        date: /^\d{5}$/.test(values[0])? new Date((values[0] - 25569) * 86400000).toISOString().slice(0, 10) : values[0],
         baseValue: values[1],
         playerScores,
         totalValue,
